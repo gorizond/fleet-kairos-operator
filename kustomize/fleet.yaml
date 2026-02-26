@@ -1,0 +1,4 @@
+# Keep Helm release identity stable across repo/path migration.
+# Previous deployment was installed as `kairos-operator-upstream-kairos-operator`.
+# Preserving releaseName avoids CRD ownership conflicts during takeover.
+releaseName: kairos-operator-upstream-kairos-operator
