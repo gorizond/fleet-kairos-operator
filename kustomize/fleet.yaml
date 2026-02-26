@@ -1,12 +1,7 @@
-# Fleet bundle options for Kairos Operator deployment.
-# Explicitly force kustomize mode for this bundle.
+# Fleet options for Kairos Operator bundle.
 kustomize:
   dir: .
 
 helm:
-  # Keep historical release identity from earlier Fleet path to avoid
-  # cross-release ownership conflicts on existing resources.
-  releaseName: kairos-operator-upstream-kairos-operator
-
-  # Allow takeover of already-existing resources during migration.
+  # During migration/repair, allow adopting pre-existing objects.
   takeOwnership: true
