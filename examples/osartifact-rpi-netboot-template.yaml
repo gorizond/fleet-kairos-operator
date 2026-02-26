@@ -1,0 +1,66 @@
+# Kairos OSArtifact template for Raspberry Pi netboot (arm64)
+# Notes:
+# - This only builds artifacts (kernel/initrd/squashfs).
+# - You still need DHCP/TFTP/HTTP netboot infrastructure to serve them.
+# - For Raspberry Pi netboot, use Ethernet.
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rpi-netboot-cloud-config
+  namespace: operator-system
+type: Opaque
+stringData:
+  cloud-config.yaml: |
+    #cloud-config
+    hostname: rpi-netboot-node
+
+    # Example unattended install target (adjust for your device)
+    install:
+      auto: true
+      reboot: true
+      device: /dev/mmcblk0
+
+    # Add your users/network/bootstrap logic here
+    users:
+      - name: kairos
+
+---
+apiVersion: build.kairos.io/v1alpha2
+kind: OSArtifact
+metadata:
+  name: rpi-netboot
+  namespace: operator-system
+spec:
+  # Replace with a real Kairos arm64 image for your target board/profile.
+  imageName: quay.io/kairos/<distro>:<release>-arm64-<flavor>-<version>
+  arch: arm64
+
+  # Netboot artifacts are generated from ISO stage.
+  iso: true
+  netboot: true
+
+  # URL that will be embedded/used for netboot assets.
+  # Must be reachable from Raspberry Pi over LAN.
+  netbootURL: http://<netboot-http-host>/kairos/rpi-netboot
+
+  cloudConfigRef:
+    name: rpi-netboot-cloud-config
+    key: cloud-config.yaml
+
+  # Optional: artifact PVC size override (default in operator is 10Gi)
+  volume:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 12Gi
+
+  # Optional
+  # bundles:
+  #   - ghcr.io/your-org/your-kairos-bundle:latest
+
+# Expected netboot outputs include:
+# - *-kernel
+# - *-initrd
+# - *.squashfs
