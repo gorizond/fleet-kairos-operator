@@ -1,4 +1,10 @@
-# Keep Helm release identity stable across repo/path migration.
-# Previous deployment was installed as `kairos-operator-upstream-kairos-operator`.
-# Preserving releaseName avoids CRD ownership conflicts during takeover.
-releaseName: kairos-operator-upstream-kairos-operator
+# Fleet bundle options for kustomize deployment.
+# `helm.*` options also apply to kustomize bundles.
+helm:
+  # Keep the historical release identity from previous GitRepo/path to avoid
+  # release migration conflicts on already-existing cluster-scoped resources.
+  releaseName: kairos-operator-upstream-kairos-operator
+
+  # Allow Fleet/Helm to adopt existing resources during the migration.
+  # We can switch this back to false after rollout is healthy.
+  takeOwnership: true
